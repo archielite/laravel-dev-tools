@@ -211,7 +211,7 @@ class FacadeDocblockGenerateCommand extends Command
                         return $return === 'self' || $return === 'static'
                             ? '\\' . $method->getDeclaringClass()->getName()
                             : $return;
-                    }) ?? 'void',
+                    }),
                 ]),
             'returns' => value(function () use ($method) {
                 $return = $this->resolveReturnDocType($method) ?? $this->resolveType($method->getReturnType()) ?? 'void';
@@ -364,7 +364,7 @@ class FacadeDocblockGenerateCommand extends Command
             ->values();
     }
 
-    public function resolveFacades(Collection $facades): void
+    protected function resolveFacades(Collection $facades): void
     {
         $facades->each(function (ReflectionClass $facade) {
             $proxies = $this->resolveDocSees($facade);
@@ -391,7 +391,9 @@ class FacadeDocblockGenerateCommand extends Command
 
                     $default = $parameter['optional'] ? ' = '.$this->resolveDefaultValue($parameter) : '';
 
-                    return "{$parameter['type']} {$rest}{$parameter['name']}{$default}";
+                    $parameter['type'] = empty($parameter['type']) ? '' : $parameter['type'].' ';
+
+                    return "{$parameter['type']}{$rest}{$parameter['name']}{$default}";
                 });
 
                 return " * @method static {$method['returns']} {$method['name']}({$parameters->join(', ')})";
