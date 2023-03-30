@@ -3,6 +3,7 @@
 namespace ArchiElite\LaravelDevTools\Commands;
 
 use ArchiElite\LaravelDevTools\DynamicParameter;
+use ArchiElite\LaravelDevTools\Exceptions\DirectoryNotFoundException;
 use ArchiElite\LaravelDevTools\FacadeFinder;
 use ArchiElite\LaravelDevTools\ReflectionMethodDecorator;
 use ArrayAccess;
@@ -45,11 +46,18 @@ class FacadeDocblockGenerateCommand extends Command
 {
     public function handle(): void
     {
-        $facadesCollection = (new FacadeFinder())->find(
-            $this->argument('path')
-                ? base_path($this->argument('path'))
-                : app_path('Facades')
-        );
+        $path = $this->argument('path');
+
+        if (! $path) {
+            $path = $this->components->ask('Enter path to the directory with facades', app_path('Facades'));
+        }
+
+        try {
+            $facadesCollection = (new FacadeFinder())->find($path);
+        } catch (DirectoryNotFoundException $exception) {
+            $this->components->error($exception->getMessage());
+            exit(self::FAILURE);
+        }
 
         if ($facadesCollection->isEmpty()) {
             $this->components->error('No facades found');
@@ -214,7 +222,7 @@ class FacadeDocblockGenerateCommand extends Command
                     }),
                 ]),
             'returns' => value(function () use ($method) {
-                $return = $this->resolveReturnDocType($method) ?? $this->resolveType($method->getReturnType()) ?? 'void';
+                $return = $this->resolveReturnDocType($method) ?? $this->resolveType($method->getReturnType()) ?? 'mixed';
 
                 return $return === 'self' ? '\\' . $method->getDeclaringClass()->getName() : $return;
             }),
