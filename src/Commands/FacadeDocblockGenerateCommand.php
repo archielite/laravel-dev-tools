@@ -31,7 +31,6 @@ use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
 use PHPStan\PhpDocParser\Parser\TypeParser;
 use ReflectionClass;
-use ReflectionIntersectionType;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -302,7 +301,7 @@ class FacadeDocblockGenerateCommand extends Command
                 return (string) $typeNode;
             }
 
-            if (enum_exists($typeNode->name)) {
+            if (version_compare(PHP_VERSION, '8.1', '>=') && enum_exists($typeNode->name)) {
                 return (string) $typeNode;
             }
 
@@ -496,7 +495,7 @@ class FacadeDocblockGenerateCommand extends Command
 
     protected function resolveType(ReflectionType|null $type): string|null
     {
-        if (class_exists('ReflectionIntersectionType') && $type instanceof ReflectionIntersectionType) {
+        if (version_compare(PHP_VERSION, '8.1', '>=') && $type instanceof \ReflectionIntersectionType) {
             return collect($type->getTypes())
                 ->map(Closure::fromCallable([$this, 'resolveType']))
                 ->filter()
