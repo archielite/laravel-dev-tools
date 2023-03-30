@@ -14,15 +14,7 @@ class FacadeFinder
 {
     public function find(string $path = null): Collection
     {
-        if ($path === null) {
-            $path = app_path();
-        }
-
-        if ($path === '') {
-            $path = base_path();
-        }
-
-        if (! is_dir($path)) {
+        if ($path === null || ! is_dir($path)) {
             throw new DirectoryNotFoundException($path);
         }
 
