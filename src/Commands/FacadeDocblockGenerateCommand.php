@@ -213,7 +213,7 @@ class FacadeDocblockGenerateCommand extends Command
                             : $return;
                     }) ?? 'void',
                 ]),
-            'returns' => value(function ()  use ($method) {
+            'returns' => value(function () use ($method) {
                 $return = $this->resolveReturnDocType($method) ?? $this->resolveType($method->getReturnType()) ?? 'void';
 
                 return $return === 'self' ? '\\' . $method->getDeclaringClass()->getName() : $return;
