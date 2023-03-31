@@ -38,6 +38,7 @@ use ReflectionType;
 use ReflectionUnionType;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Throwable;
 
 #[AsCommand('dev-tool:facade-docblock-generate')]
@@ -52,7 +53,7 @@ class FacadeDocblockGenerateCommand extends Command
         }
 
         try {
-            $facadesCollection = (new FacadeFinder())->find($path);
+            $facadesCollection = (new FacadeFinder())->find($path, $this->option('exclude') ?: []);
         } catch (DirectoryNotFoundException $exception) {
             $this->components->error($exception->getMessage());
             exit(self::FAILURE);
@@ -75,7 +76,8 @@ class FacadeDocblockGenerateCommand extends Command
 
     protected function configure(): void
     {
-        $this->addArgument('path', InputArgument::OPTIONAL, 'Path to the directory with facades');
+        $this->addArgument('path', InputArgument::OPTIONAL, 'Path to the directory with facades')
+            ->addOption('exclude', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Exclude paths');
     }
 
     protected function conflictsWithFacade(ReflectionClass $facade, ReflectionMethodDecorator|string $method): bool

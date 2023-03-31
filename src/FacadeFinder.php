@@ -5,6 +5,7 @@ namespace ArchiElite\LaravelDevTools;
 use ArchiElite\LaravelDevTools\Exceptions\DirectoryNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use Symfony\Component\Finder\Finder;
@@ -12,14 +13,19 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class FacadeFinder
 {
-    public function find(string $path = null): Collection
+    public function find(string $path = null, array $ignorePaths = []): Collection
     {
-        if ($path === null || ! is_dir($path)) {
+        if ($path === null || ! File::isDirectory($path)) {
             throw new DirectoryNotFoundException($path);
+        }
+
+        if (! empty($ignorePaths)) {
+            $ignorePaths = array_map(fn ($ignorePath) => ltrim(ltrim($ignorePath, $path), '/'), $ignorePaths);
         }
 
         $finder = (new Finder())->in($path)->files()
             ->notPath('vendor')
+            ->notPath($ignorePaths)
             ->name('*.php');
 
         return (new Collection($finder))
