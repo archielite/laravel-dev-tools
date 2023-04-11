@@ -2,9 +2,7 @@
 /.idea
 /.fleet
 /.vscode
-.phpunit.result.cache
 .env
 .env.local
 .env.testing
 composer.lock
-coverage
