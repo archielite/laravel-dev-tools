@@ -17,7 +17,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
-        "archielite/laravel-dev-tools": "^1.0"
+        "archielite/laravel-facade-docblock-generator": "^1.0"
     },
     "config": {
         "sort-packages": true
