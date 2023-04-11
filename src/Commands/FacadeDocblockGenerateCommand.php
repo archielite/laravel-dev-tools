@@ -460,7 +460,7 @@ class FacadeDocblockGenerateCommand extends Command
             ->map(fn ($tag) => Str::squish($tag));
     }
 
-    protected function resolveDocParamType(ReflectionMethodDecorator $method, ReflectionParameter $parameter): string|null
+    protected function resolveDocParamType(ReflectionMethodDecorator $method, DynamicParameter|ReflectionParameter $parameter): string|null
     {
         $paramTypeNode = collect($this->parseDocblock($method->getDocComment())->getParamTagValues())
             ->firstWhere('parameterName', '$'.$parameter->getName());
